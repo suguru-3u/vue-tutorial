@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Conditional branch -->
+      <span v-if="state.isName">名前あり</span>
+      <p>{{state.name}}</p>
+      <!-- loop processing -->
+      <ol>
+        <li v-for="todo in state.todos">{{ todo.text }}</li>
+      </ol>
+      <!-- method -->
+      <p>{{ state.message }}</p>
+      <button v-on:click="reverseMessage">Reverce Message</button>
+
+      <!-- two-way binding -->
+      <p>{{ state.vmodel}}</p>
+      <input type="text" v-model="state.vmodel" />
+
+      <!-- component -->
+      <button-counter v-bind:todo="state.vmodel"></button-counter>
+    </div>
+
+    <script>
+      Vue.createApp({
+        setup() {
+          // reactive data
+          const state = Vue.reactive({
+            name: "一郎",
+            isName: true,
+            todos: [
+              { text: "Learn JavaScript" },
+              { text: "Learn Vue" },
+              { text: "Build something awesome" },
+            ],
+            message: "Yahoo",
+            vmodel: "",
+          });
+
+          // method
+          const reverseMessage = () => {
+            state.message = state.message.split("").reverse().join("");
+          };
+
+          return {
+            state,
+            reverseMessage,
+          };
+        },
+      })
+        // component
+        .component("button-counter", {
+          // give data from parent to child（exmaple:props）
+          props: ["todo"],
+          setup() {
+            const state = Vue.reactive({
+              count: 0,
+            });
+            return {
+              state,
+            };
+          },
+          template: `<button v-on:click="state.count++">You clicked me {{ state.count }} times.</button>
+          <li>{{ todo }}</li>`,
+        })
+        .mount("#app");
+    </script>
+  </body>
+</html>
